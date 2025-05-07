@@ -85,9 +85,16 @@ with tab4:
 
 with tab5:
     st.subheader("🥧 Market Cap Dominance")
-    dominance = df[['name', 'market_cap_dominance']].set_index('name')
+    dominance = df[['name', 'market_cap_dominance']].sort_values(by='market_cap_dominance', ascending=False).set_index('name')
     fig5, ax5 = plt.subplots()
-    ax5.pie(dominance['market_cap_dominance'], labels=dominance.index, autopct='%1.1f%%', startangle=90)
+    ax5.pie(
+        dominance['market_cap_dominance'], 
+        labels=dominance.index, 
+        autopct='%1.1f%%', 
+        startangle=140, 
+        pctdistance=0.8, 
+        labeldistance=1.1
+    )
     ax5.axis('equal')
     st.pyplot(fig5)
 
