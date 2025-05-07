@@ -111,7 +111,7 @@ with tab3:
         temp = filtered_df[filtered_df['name'] == name]
         fig3.add_trace(go.Scatter(x=temp['Timeframe'], y=temp['Percent Change'], name=name, mode='lines+markers'))
 
-    fig3.update_layout(title="Percent Change Trend", xaxis_title="Timeframe", yaxis_title="Percent Change", template="plotly_dark")
+    fig3.update_layout(title="Percent Change Trend", xaxis_title="Timeframe", yaxis_title="Percent Change",xaxis=dict(categoryorder='array', categoryarray=order_desc[::-1]), template="plotly_dark")
     st.plotly_chart(fig3, use_container_width=True)
 
 with tab4:
