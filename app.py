@@ -98,6 +98,7 @@ with tab3:
     fig3, ax3 = plt.subplots(figsize=(10, 5))
     sns.pointplot(data=filtered_df, x='Timeframe', y='Percent Change', hue='name', ax=ax3)
     plt.tight_layout()
+    ax3.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     st.pyplot(fig3)
 
 
