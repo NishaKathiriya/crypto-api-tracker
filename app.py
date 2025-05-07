@@ -50,19 +50,38 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🥧 Dominance"
 ])
 
+import plotly.express as px
+
 with tab1:
     st.subheader("🏦 Top 10 by Market Cap")
     st.caption("This bar chart displays the top cryptocurrencies by market capitalization (USD), allowing you to compare how much total value each coin holds in the market.")
-    selected_coins = st.multiselect("🔍 Select cryptocurrencies to display", df['name'].unique(), df['name'].unique(), key="tab1_filter")
+
+    selected_coins = st.multiselect(
+        "🔍 Select cryptocurrencies to display",
+        df['name'].unique(),
+        df['name'].unique(),
+        key="tab1_filter"
+    )
+
     filtered_df = df[df['name'].isin(selected_coins)]
     top_marketcap = filtered_df[['name', 'market_cap']].sort_values(by='market_cap', ascending=False)
 
-    fig1 = go.Figure(go.Bar(
-        x=top_marketcap['name'],
-        y=top_marketcap['market_cap'],
-        marker_color='steelblue'
-    ))
-    fig1.update_layout(title="Top 10 Market Cap", xaxis_title="Cryptocurrency", yaxis_title="Market Cap (USD)", template="plotly_dark")
+    # ✅ Plotly Express Bar Chart
+    fig1 = px.bar(
+        top_marketcap,
+        x='name',
+        y='market_cap',
+        color='name',
+        labels={'name': 'Cryptocurrency', 'market_cap': 'Market Cap (USD)'},
+        title='Top 10 by Market Cap'
+    )
+    fig1.update_layout(
+        template='plotly_dark',
+        xaxis_title='Cryptocurrency',
+        yaxis_title='Market Cap (USD)',
+        showlegend=False  # hide redundant color legend
+    )
+
     st.plotly_chart(fig1, use_container_width=True)
 
 with tab2:
