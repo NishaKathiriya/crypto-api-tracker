@@ -6,11 +6,10 @@ from datetime import datetime
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Page setup
 st.set_page_config(page_title="Crypto API Tracker", layout="wide")
-st.title("🚀 Real-Time Crypto Dashboard")
+st.title("\U0001F680 Real-Time Crypto Dashboard")
 
-# Load API Key
+# Load API Key from Streamlit secrets
 api_key = st.secrets["CMC_API_KEY"]
 
 # API request
@@ -28,31 +27,21 @@ except Exception as e:
 # Normalize and timestamp
 df = pd.json_normalize(data)
 df['Timestamp'] = datetime.now()
-
-# Clean column names for easier plotting
 df.columns = df.columns.str.replace('quote.USD.', '', regex=False)
 
-# Display current prices
-st.subheader("💱 Current Prices")
-st.dataframe(df[['name', 'symbol', 'price', 'percent_change_1h', 'Timestamp']])
-
-st.sidebar.header("🔍 Filter")
-coin_selection = st.sidebar.selectbox("Choose a cryptocurrency to filter (or select 'All')",
-                                      options=["All"] + sorted(df['name'].unique().tolist()))
-
-
-# Setup tabs for visualizations
+# Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📊 Market Cap", 
-    "📈 Price vs Volume", 
-    "📈 Percent Change Trend", 
-    "📉 Volume Change %", 
-    "🥧 Market Dominance"
+    "\U0001F4CA Market Cap", 
+    "\U0001F4C8 Price vs Volume", 
+    "\U0001F4C9 Percent Change", 
+    "\U0001F501 Volume Change", 
+    "\U0001F967 Dominance"
 ])
 
 with tab1:
-    st.subheader("🏦 Top 10 by Market Cap")
-    filtered_df = df if coin_selection == "All" else df[df['name'] == coin_selection]
+    st.subheader("\U0001F3E6 Top 10 by Market Cap")
+    selected_coins = st.multiselect("\U0001F50D Select cryptocurrencies to display", df['name'].unique(), df['name'].unique(), key="tab1_filter")
+    filtered_df = df[df['name'].isin(selected_coins)]
     top_marketcap = filtered_df[['name', 'market_cap']].sort_values(by='market_cap', ascending=False)
     fig1, ax1 = plt.subplots(figsize=(10, 5))
     sns.barplot(data=top_marketcap, x='name', y='market_cap', ax=ax1)
@@ -60,10 +49,10 @@ with tab1:
     plt.xticks(rotation=45)
     st.pyplot(fig1)
 
-
 with tab2:
-    st.subheader("📊 Price vs. 24h Volume")
-    filtered_df = df if coin_selection == "All" else df[df['name'] == coin_selection]
+    st.subheader("\U0001F4CA Price vs. 24h Volume")
+    selected_coins = st.multiselect("\U0001F50D Select cryptocurrencies to display", df['name'].unique(), df['name'].unique(), key="tab2_filter")
+    filtered_df = df[df['name'].isin(selected_coins)]
     fig2, ax2 = plt.subplots()
     sns.scatterplot(data=filtered_df, x='price', y='volume_24h', hue='name', ax=ax2)
     ax2.set_xscale('log')
@@ -72,23 +61,22 @@ with tab2:
     ax2.set_ylabel("24h Volume (USD)")
     st.pyplot(fig2)
 
-
 with tab3:
-    st.subheader("📈 Percent Change (1h - 90d)")
+    st.subheader("\U0001F4C9 Percent Change (1h - 90d)")
     df_melt = df[['name', 'percent_change_1h', 'percent_change_24h', 'percent_change_7d',
                   'percent_change_30d', 'percent_change_60d', 'percent_change_90d']]
     df_melt = df_melt.melt(id_vars='name', var_name='Timeframe', value_name='Percent Change')
     df_melt['Timeframe'] = df_melt['Timeframe'].str.replace('percent_change_', '')
-
-    filtered_df = df_melt if coin_selection == "All" else df_melt[df_melt['name'] == coin_selection]
+    selected_coins = st.multiselect("\U0001F50D Select cryptocurrencies to display", df['name'].unique(), df['name'].unique(), key="tab3_filter")
+    filtered_df = df_melt[df_melt['name'].isin(selected_coins)]
     fig3, ax3 = plt.subplots(figsize=(10, 5))
     sns.pointplot(data=filtered_df, x='Timeframe', y='Percent Change', hue='name', ax=ax3)
     st.pyplot(fig3)
 
-
 with tab4:
-    st.subheader("🔁 24h Volume Change %")
-    filtered_df = df if coin_selection == "All" else df[df['name'] == coin_selection]
+    st.subheader("\U0001F501 24h Volume Change %")
+    selected_coins = st.multiselect("\U0001F50D Select cryptocurrencies to display", df['name'].unique(), df['name'].unique(), key="tab4_filter")
+    filtered_df = df[df['name'].isin(selected_coins)]
     volume_change = filtered_df[['name', 'volume_change_24h']].sort_values(by='volume_change_24h', ascending=False)
     fig4, ax4 = plt.subplots(figsize=(10, 5))
     sns.barplot(data=volume_change, x='name', y='volume_change_24h', ax=ax4)
@@ -96,22 +84,19 @@ with tab4:
     plt.xticks(rotation=45)
     st.pyplot(fig4)
 
-
 with tab5:
-    st.subheader("🥧 Market Cap Dominance")
-    dominance = df[['name', 'market_cap_dominance']].sort_values(by='market_cap_dominance', ascending=False)
-    filtered_dom = dominance if coin_selection == "All" else dominance[dominance['name'] == coin_selection]
-
-    if len(filtered_dom) > 1:
+    st.subheader("\U0001F967 Market Cap Dominance (Top 5)")
+    selected_coins = st.multiselect("\U0001F50D Select cryptocurrencies to display", df['name'].unique(), df['name'].unique(), key="tab5_filter")
+    dominance = df[df['name'].isin(selected_coins)][['name', 'market_cap_dominance']].sort_values(by='market_cap_dominance', ascending=False)
+    if len(dominance) > 1:
         fig5, ax5 = plt.subplots()
-        ax5.pie(filtered_dom['market_cap_dominance'], labels=filtered_dom['name'],
+        ax5.pie(dominance['market_cap_dominance'], labels=dominance['name'],
                 autopct='%1.1f%%', startangle=90, pctdistance=0.8, labeldistance=1.1)
         ax5.axis('equal')
         st.pyplot(fig5)
     else:
-        st.info("💡 Not enough data for a pie chart. Try 'All' or choose a different crypto.")
-
+        st.info("\U0001F4A1 Not enough data for a pie chart. Select more than one coin.")
 
 # Footer
 st.markdown("---")
-st.markdown("🔒 API secured with Streamlit secrets · Built by **Nisha Kathiriya**")
+st.markdown("\U0001F512 API secured with Streamlit secrets • Built by **Nisha Kathiriya**")
