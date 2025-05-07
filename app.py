@@ -88,7 +88,7 @@ with tab3:
     df_melt = df_melt.melt(id_vars='name', var_name='Timeframe', value_name='Percent Change')
     df_melt['Timeframe'] = df_melt['Timeframe'].str.replace('percent_change_', '')
 
-    # ✅ Explicit descending order for X-axis
+    # Explicit descending order for X-axis
     order_desc = ['90d', '60d', '30d', '7d', '24h', '1h']
     df_melt['Timeframe'] = pd.Categorical(df_melt['Timeframe'], categories=order_desc, ordered=True)
 
@@ -97,7 +97,9 @@ with tab3:
 
     fig3, ax3 = plt.subplots(figsize=(10, 5))
     sns.pointplot(data=filtered_df, x='Timeframe', y='Percent Change', hue='name', ax=ax3)
-    st.pyplot(fig3)
+    plt.tight_layout()
+    st.pyplot(fig3)
+
 
 
 with tab4:
