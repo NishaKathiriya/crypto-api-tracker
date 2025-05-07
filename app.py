@@ -63,7 +63,7 @@ with tab1:
     sns.barplot(data=top_marketcap, x='name', y='market_cap', ax=ax1)
     ax1.set_ylabel("Market Cap (USD)")
     plt.xticks(rotation=45)
-    ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    
 
     st.pyplot(fig1)
 
@@ -78,6 +78,7 @@ with tab2:
     ax2.set_yscale('log')
     ax2.set_xlabel("Price (USD)")
     ax2.set_ylabel("24h Volume (USD)")
+    ax2.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     st.pyplot(fig2)
 
 with tab3:
