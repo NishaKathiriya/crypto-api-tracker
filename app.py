@@ -82,34 +82,22 @@ with tab3:
     st.subheader("📈 Percent Change (1h - 90d)")
     st.caption("This point plot shows the percentage change in price for each cryptocurrency across multiple timeframes — from 90 days down to 1 hour.")
 
-    # Prepare melted data
     df_melt = df[['name', 'percent_change_1h', 'percent_change_24h', 'percent_change_7d',
                   'percent_change_30d', 'percent_change_60d', 'percent_change_90d']]
+
     df_melt = df_melt.melt(id_vars='name', var_name='Timeframe', value_name='Percent Change')
     df_melt['Timeframe'] = df_melt['Timeframe'].str.replace('percent_change_', '')
 
-    # Set descending order
+    # ✅ Explicit descending order for X-axis
     order_desc = ['90d', '60d', '30d', '7d', '24h', '1h']
     df_melt['Timeframe'] = pd.Categorical(df_melt['Timeframe'], categories=order_desc, ordered=True)
 
-    # Layout with 2 columns: chart | menu
-    col1, col2 = st.columns([4, 1])  # Adjust ratio as needed
+    selected_coins = st.multiselect("🔍 Select cryptocurrencies to display", df['name'].unique(), df['name'].unique(), key="tab3_filter")
+    filtered_df = df_melt[df_melt['name'].isin(selected_coins)]
 
-    with col2:
-        st.markdown("### 🔍 Select Coins")
-        selected_coins = st.multiselect(
-            "Choose cryptocurrencies to display",
-            df['name'].unique(),
-            default=df['name'].unique(),
-            key="tab3_filter"
-        )
-
-    with col1:
-        filtered_df = df_melt[df_melt['name'].isin(selected_coins)]
-        fig3, ax3 = plt.subplots(figsize=(10, 5))
-        sns.pointplot(data=filtered_df, x='Timeframe', y='Percent Change', hue='name', ax=ax3)
-        plt.tight_layout()  # Prevent label cut-off
-        st.pyplot(fig3)
+    fig3, ax3 = plt.subplots(figsize=(10, 5))
+    sns.pointplot(data=filtered_df, x='Timeframe', y='Percent Change', hue='name', ax=ax3)
+    st.pyplot(fig3)
 
 
 with tab4:
