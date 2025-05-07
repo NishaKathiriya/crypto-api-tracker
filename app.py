@@ -29,6 +29,21 @@ df = pd.json_normalize(data)
 df['Timestamp'] = datetime.now()
 df.columns = df.columns.str.replace('quote.USD.', '', regex=False)
 
+st.subheader("💱 Current Prices Table")
+
+# Multiselect for table as well (optional)
+selected_table_coins = st.multiselect(
+    "🔍 Filter table by cryptocurrencies",
+    options=df['name'].unique().tolist(),
+    default=df['name'].unique().tolist(),
+    key="table_filter"
+)
+
+filtered_table_df = df[df['name'].isin(selected_table_coins)]
+
+st.dataframe(filtered_table_df[['name', 'symbol', 'price', 'percent_change_1h', 'Timestamp']])
+
+
 # Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "\U0001F4CA Market Cap", 
