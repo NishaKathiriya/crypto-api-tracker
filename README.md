@@ -53,7 +53,7 @@ Contributions, suggestions, and ideas are welcome!
 
 
 
-Built with ❤️ by [Nisha Kathiriya](https://www.linkedin.com/in/nisha-kathiriya)
+Built with ❤️ by [Nisha Kathiriya](https://www.linkedin.com/in/nisha-kathiriya-5716a1206/)
 
 
 
