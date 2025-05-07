@@ -80,13 +80,21 @@ with tab2:
 
 with tab3:
     st.subheader("📈 Percent Change (1h - 90d)")
-    st.caption("This point plot shows the percentage change in price for each cryptocurrency across multiple timeframes — from 1 hour to 90 days.")
+    st.caption("This point plot shows the percentage change in price for each cryptocurrency across multiple timeframes — from 90 days down to 1 hour.")
+
     df_melt = df[['name', 'percent_change_1h', 'percent_change_24h', 'percent_change_7d',
                   'percent_change_30d', 'percent_change_60d', 'percent_change_90d']]
+
     df_melt = df_melt.melt(id_vars='name', var_name='Timeframe', value_name='Percent Change')
     df_melt['Timeframe'] = df_melt['Timeframe'].str.replace('percent_change_', '')
+
+    # ✅ Explicit descending order for X-axis
+    order_desc = ['90d', '60d', '30d', '7d', '24h', '1h']
+    df_melt['Timeframe'] = pd.Categorical(df_melt['Timeframe'], categories=order_desc, ordered=True)
+
     selected_coins = st.multiselect("🔍 Select cryptocurrencies to display", df['name'].unique(), df['name'].unique(), key="tab3_filter")
     filtered_df = df_melt[df_melt['name'].isin(selected_coins)]
+
     fig3, ax3 = plt.subplots(figsize=(10, 5))
     sns.pointplot(data=filtered_df, x='Timeframe', y='Percent Change', hue='name', ax=ax3)
     st.pyplot(fig3)
