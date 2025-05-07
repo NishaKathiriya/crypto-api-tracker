@@ -84,15 +84,22 @@ with tab4:
     st.pyplot(fig4)
 
 with tab5:
-    st.subheader("🥧 Market Cap Dominance")
-    dominance_top5 = dominance.sort_values(by='market_cap_dominance', ascending=False).head(5)
+    st.subheader("🥧 Market Cap Dominance (Top 5)")
+
+    # ✅ Create the base variable FIRST
+    dominance = df[['name', 'market_cap_dominance']].sort_values(by='market_cap_dominance', ascending=False)
+
+    # ✅ Slice Top 5
+    dominance_top5 = dominance.head(5).set_index('name')
+
+    # 🥧 Pie Chart version (cleaned)
     fig5, ax5 = plt.subplots()
     ax5.pie(
-        dominance['market_cap_dominance'], 
-        labels=dominance.index, 
-        autopct='%1.1f%%', 
-        startangle=140, 
-        pctdistance=0.8, 
+        dominance_top5['market_cap_dominance'],
+        labels=dominance_top5.index,
+        autopct='%1.1f%%',
+        startangle=140,
+        pctdistance=0.8,
         labeldistance=1.1
     )
     ax5.axis('equal')
