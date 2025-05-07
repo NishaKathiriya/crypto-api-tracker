@@ -107,31 +107,21 @@ with tab5:
     st.subheader("🥧 Market Cap Dominance (Top 5)")
     st.caption("This pie chart shows the top 5 cryptocurrencies based on their market cap dominance — their share of the entire crypto market. It helps visualize how dominant coins like BTC and ETH are compared to others.")
 
-    selected_coins = st.multiselect(
-        "🔍 Select cryptocurrencies to display",
-        options=df['name'].unique().tolist(),
-        default=df['name'].unique().tolist(),
-        key="tab5_filter"
+    # Sort and get top 5 by dominance
+    dominance = df[['name', 'market_cap_dominance']].sort_values(by='market_cap_dominance', ascending=False).head(5)
+
+    fig5, ax5 = plt.subplots()
+    ax5.pie(
+        dominance['market_cap_dominance'],
+        labels=dominance['name'],
+        autopct='%1.1f%%',
+        startangle=90,
+        pctdistance=0.8,
+        labeldistance=1.1
     )
+    ax5.axis('equal')
+    st.pyplot(fig5)
 
-    # Filter and sort by dominance, then get top 5
-    dominance = df[df['name'].isin(selected_coins)][['name', 'market_cap_dominance']]
-    dominance = dominance.sort_values(by='market_cap_dominance', ascending=False).head(5)
-
-    if len(dominance) > 1:
-        fig5, ax5 = plt.subplots()
-        ax5.pie(
-            dominance['market_cap_dominance'],
-            labels=dominance['name'],
-            autopct='%1.1f%%',
-            startangle=90,
-            pctdistance=0.8,
-            labeldistance=1.1
-        )
-        ax5.axis('equal')
-        st.pyplot(fig5)
-    else:
-        st.info("💡 Not enough data for a pie chart. Please select more than one coin.")
 
 
 
